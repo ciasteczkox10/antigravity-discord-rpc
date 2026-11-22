@@ -1,6 +1,6 @@
 {
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
-  "name": "discord-rpc",
+  "name": "antigravity-discord-rpc",
   "displayName": "Discord Rich Presence",
   "version": "2.0.0",
   "description": "Shows Antigravity Desktop activity in Discord while this plugin's managed MCP server is running.",

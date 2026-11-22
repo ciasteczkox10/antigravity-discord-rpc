@@ -24,7 +24,7 @@ A native Google Antigravity plugin that shows your Antigravity activity, includi
 ## Architecture
 
 ```
-discord-rpc/
+antigravity-discord-rpc/
 ├── plugin.json              # plugin manifest
 ├── mcp_config.json          # MCP server launch + activity settings (env vars)
 ├── hooks.json               # lifecycle hooks (SessionStart, PreInvocation, PostInvocation, Stop)
@@ -65,6 +65,8 @@ The detected model name overrides `STATE`. A model switch shows up on the next i
 ## Installation
 
 ```powershell
+git clone https://github.com/ciasteczkox10/antigravity-discord-rpc
+cd antigravity-discord-rpc
 agy plugin validate --strict .
 agy plugin install .
 agy plugin list
@@ -89,7 +91,7 @@ node --check .\scripts\model-state.mjs
 ## Uninstall
 
 ```powershell
-agy plugin uninstall discord-rpc
+agy plugin uninstall antigravity-discord-rpc
 ```
 
 ## License
