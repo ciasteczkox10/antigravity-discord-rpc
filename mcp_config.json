@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "discord-presence": {
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/discord-presence.mjs"
+      ],
+      "env": {
+        "DISCORD_APPLICATION_ID": "1573947464581652570",
+        "APPLICATION_NAME": "Antigravity",
+        "DETAILS": "",
+        "STATE": "AI-assisted development",
+        "LARGE_IMAGE": "antigravity",
+        "SMALL_IMAGE": "",
+        "ELAPSED_TIME": "true"
+      },
+      "tools": {
+        "status": {
+          "eager": true
+        }
+      }
+    }
+  }
+}
