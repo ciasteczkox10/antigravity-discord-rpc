@@ -107,10 +107,6 @@ function read_model_state() {
     if (typeof state.modelName !== "string" || !state.modelName.trim()) {
       return "";
     }
-    const age_ms = Date.now() - Number(state.updatedAt || 0);
-    if (age_ms > 24 * 60 * 60 * 1000) {
-      return "";
-    }
     return format_model_name(state.modelName);
   } catch {
     return "";
@@ -147,17 +143,63 @@ function format_model_name(model_name) {
     return `Gemini ${version} ${family} (${tier_label})`;
   }
 
-  const compact_match = name.match(/^([^-]+)-(.+)-(low|medium|high|xhigh)$/i);
-  if (compact_match) {
-    const tier = compact_match[3].toLowerCase();
-    const tier_label = tier === "xhigh" ? "Extra" : tier[0].toUpperCase() + tier.slice(1);
-    return `${compact_match[1][0].toUpperCase()}${compact_match[1].slice(1)} ${compact_match[2]} (${tier_label})`;
+  const tier_match = name.match(/^(.*)-(low|medium|high|xhigh|extra)(?:-thinking)?$/i);
+  if (tier_match) {
+    const base_name = format_model_words(tier_match[1]);
+    if (base_name) {
+      const tier = tier_match[2].toLowerCase();
+      const tier_label = tier === "xhigh" || tier === "extra"
+        ? "Extra"
+        : tier[0].toUpperCase() + tier.slice(1);
+      return `${base_name} (${tier_label})`;
+    }
+  }
+
+  const generic_name = format_model_words(name);
+  if (generic_name) {
+    return generic_name;
   }
 
   if (/^[a-z0-9][a-z0-9._/-]*$/i.test(name)) {
     return name;
   }
   return "AI-assisted development";
+}
+
+function format_model_words(model_name) {
+  const words = model_name.trim().split(/[-_]+/).filter(Boolean);
+  if (words.length === 0) {
+    return "";
+  }
+
+  const acronyms = new Set(["ai", "gpt", "oss", "lm", "llm", "vlm"]);
+  const formatted_words = words.map((word) => {
+    const lower_word = word.toLowerCase();
+    if (acronyms.has(lower_word)) {
+      return lower_word.toUpperCase();
+    }
+    if (/^\d+(?:\.\d+)?[bt]$/i.test(word)) {
+      return word.toUpperCase();
+    }
+    if (/^\d+$/.test(word)) {
+      return word;
+    }
+    return lower_word[0].toUpperCase() + lower_word.slice(1);
+  });
+
+  return formatted_words.reduce((parts, word, index) => {
+    const previous_word = formatted_words[index - 1];
+    if (
+      previous_word &&
+      /^[A-Z]+$/.test(previous_word) &&
+      /^[A-Z]+$/.test(word)
+    ) {
+      parts[parts.length - 1] += `-${word}`;
+    } else {
+      parts.push(word);
+    }
+    return parts;
+  }, []).join(" ");
 }
 
 function poll_model_state() {
@@ -171,10 +213,9 @@ function poll_model_state() {
       : null;
     if (
       typeof state?.modelName === "string" &&
-      Number.isFinite(Number(state.updatedAt)) &&
-      Date.now() - Number(state.updatedAt) <= 24 * 60 * 60 * 1000
+      state.modelName.trim()
     ) {
-      signature = state.modelName;
+      signature = state.modelName.trim();
     }
   } catch {}
 

@@ -23,14 +23,6 @@ function read_payload() {
 const payload = await read_payload();
 const model_name = typeof payload.modelName === "string" ? payload.modelName.trim() : "";
 
-if (typeof payload.terminationReason === "string") {
-  try {
-    fs.unlinkSync(state_file);
-  } catch {}
-  process.stdout.write("{}");
-  process.exit(0);
-}
-
 try {
   fs.mkdirSync(state_dir, { recursive: true });
 } catch {
